@@ -7,9 +7,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include "Servlet.hpp"
 
 static void *doit(void *);
-main() {
+int main() {
   int sock, length;
   struct sockaddr_in server;
   int msgsock;
@@ -28,7 +29,7 @@ main() {
   if (bind (sock, (struct sockaddr *)&server, sizeof server) < 0)  {    perror ("binding stream socket");
   }
   listen (sock, 5);
-  while(1){
+  while(1) {
     msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
     if (msgsock == -1) {
       perror("accept");
@@ -37,9 +38,11 @@ main() {
     pthread_create(&tid, NULL, doit, (void*) msgsock);
     printf("after thread create\n");  
  }
-     
+
+  return 0;
 }
- static void * doit(void * arg) {
+
+static void * doit(void * arg) {
   DIR * dirp;
   struct direct *d;
   char buf1[80];
@@ -48,7 +51,7 @@ main() {
   int rval;
   int clientsock;
   printf("before assignment\n");
-  clientsock = (int) (arg);
+  clientsock = *((int *) arg);
   printf("after assignment\n");
   /* pthread_detach(pthread_self());*/
   if ((rval = read(clientsock, buf1, 80)) < 0){
