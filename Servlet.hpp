@@ -11,5 +11,7 @@ public:
     virtual void doGet(HttpRequest request, HttpResponse response) = 0;
 
     virtual void doPost(HttpRequest request, HttpResponse response) = 0;
+
+    ~Servlet()= default;
 };
 
