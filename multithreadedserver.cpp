@@ -6,11 +6,9 @@
 static void *doInServerThread(void *);
 
 int main() {
-    int sock, length;
+    int sock;
     struct sockaddr_in server;
     int msgsock;
-    int i;
-    pthread_t tid;
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {

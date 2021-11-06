@@ -14,11 +14,11 @@ void ServerThread::start() {
 }
 
 void *ServerThread::run(void *arg) {
-    DIR *dirp;
+//    DIR *dirp;
     struct direct *d;
     int readBufferLength = 1024;
     char buf1[readBufferLength];
-    char buf2[102400];
+    char buf2[1024];
 
     int clientsock = static_cast<int>(reinterpret_cast<intptr_t>(arg));
 
@@ -38,20 +38,12 @@ void *ServerThread::run(void *arg) {
 
 
     buf2[0] = '\0';
-    strcpy(buf2, "SOME RESPONSE");
+    strcpy(buf2, "SOME RESPONSE\r\n");
+    if ((readVal = write(clientsock, buf2, 1024)) < 0) {
+        perror("writing socket");
+    }
 
-    do {
-        readVal = write(clientsock, buf2, 1024);
-        if (readVal < 0) {
-            perror("writing socket");
-        }
-    } while (readVal == 1024);
-
-//    if ((rval = write(clientsock, buf2, 1024)) < 0) {
-//        perror("writing socket");
-//    }
-
-    closedir(dirp);
+//    closedir(dirp);
     close(clientsock);
     return nullptr;
 }
