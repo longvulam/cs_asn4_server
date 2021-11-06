@@ -1,9 +1,16 @@
 #include <sys/socket.h>
 #include <resolv.h>
+#include <wait.h>
 #include "Servlet.hpp"
 #include "ServerThread.hpp"
 
-static void *doInServerThread(void *);
+void sig_chld(int signo) {
+    pid_t pid;
+    int stat;
+    pid = wait(&stat);
+    printf("Child %d terminated\n", pid);
+    return;
+}
 
 int main() {
     int sock;
@@ -19,10 +26,12 @@ int main() {
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(8888);
 
-    if (bind(sock, (struct sockaddr *) &server, sizeof (server)) < 0) {
+    if (bind(sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
         perror("binding stream socket");
     }
+
     listen(sock, 5);
+
     while (1) {
         msgsock = accept(sock, (struct sockaddr *) 0, (socklen_t *) sizeof(server));
         if (msgsock == -1) {
@@ -31,6 +40,4 @@ int main() {
         ServerThread thread{msgsock};
         thread.start();
     }
-
-    return 0;
 }
