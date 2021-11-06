@@ -6,7 +6,7 @@
 
 class ServerThread {
 private:
-    int msgsock;
+    int msgsock{};
     pthread_t tid{};
     static void* run(void *arg);
 
