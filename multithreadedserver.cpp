@@ -1,16 +1,9 @@
 #include <sys/socket.h>
 #include <resolv.h>
-#include <wait.h>
+#include <cstdio>
+#include <sys/stat.h>
 #include "Servlet.hpp"
 #include "ServerThread.hpp"
-
-void sig_chld(int signo) {
-    pid_t pid;
-    int stat;
-    pid = wait(&stat);
-    printf("Child %d terminated\n", pid);
-    return;
-}
 
 int main() {
     int sock;
@@ -22,6 +15,7 @@ int main() {
         perror("opening stream socket");
     }
 
+
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(8888);
@@ -31,6 +25,9 @@ int main() {
     }
 
     listen(sock, 5);
+
+    mkdir(TEMP_FOLDER, S_IRWXU);
+    mkdir(IMAGES_FOLDER, S_IRWXU);
 
     while (1) {
         msgsock = accept(sock, (struct sockaddr *) 0, (socklen_t *) sizeof(server));

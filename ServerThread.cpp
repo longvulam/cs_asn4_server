@@ -49,8 +49,6 @@ void *ServerThread::run(void *arg) {
 //    servlet.doPost(request, response);
 //    servlet.doGet(request, response);
 
-
-
     // WRITING PART
     // TODO: this part needs to go to response write
     //doGet?
