@@ -26,7 +26,17 @@ void *ServerThread::run(void *arg) {
 
     int clientsock = static_cast<int>(reinterpret_cast<intptr_t>(arg));
 
-    HttpRequest request(outBuffer);
+    // READING PART
+    size_t readLength;
+    string input;
+    do {
+        readLength = read(clientsock, inBuffer, readBufferLength);
+        if (readLength > 0) {
+            input += inBuffer;
+        }
+    } while (readLength == readBufferLength);
+
+    HttpRequest request(input);
     HttpResponse response(outBuffer);
 
     UploadServlet servlet;
@@ -36,15 +46,6 @@ void *ServerThread::run(void *arg) {
 //    servlet.doGet(request, response);
 
 
-    // READING PART
-    size_t readVal;
-    do {
-        readVal = read(clientsock, inBuffer, readBufferLength);
-        if (readVal > 0) {
-            printf("%s\n", inBuffer);
-        }
-    } while (readVal == readBufferLength);
-
 
     // WRITING PART
     // TODO: this part needs to go to response write
@@ -53,7 +54,7 @@ void *ServerThread::run(void *arg) {
 //    strcpy(buf2, "SOME RESPONSE\r\n");
 
     // write buffer to the end.
-    if ((readVal = write(clientsock, outBuffer, 1024)) < 0) {
+    if ((readLength = write(clientsock, outBuffer, 1024)) < 0) {
         perror("writing socket");
     }
 
