@@ -36,7 +36,7 @@ public:
 
     void readFile(stringstream &strStream, string &line, const string &fileName);
 
-    string trim(const string &valuePart);
+    static string trim(const string &valuePart);
 
     FilePart getFilePart(const string& key) const;
 
