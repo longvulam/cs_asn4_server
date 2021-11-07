@@ -27,6 +27,10 @@ public:
     void readParams(const string &pathPart);
 
     void readBody(const string& bodyStr);
+
+    map<string, string> getParams();
+
+    map<string, string> getHeaders();
 };
 
 

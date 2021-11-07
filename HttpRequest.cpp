@@ -131,3 +131,11 @@ string HttpRequest::urlDecode(string &SRC) {
     }
     return (ret);
 }
+
+map<string, string> HttpRequest::getParams() {
+    return params;
+}
+
+map<string, string> HttpRequest::getHeaders() {
+    return headers;
+}
