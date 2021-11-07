@@ -9,7 +9,7 @@
 #include "UploadServlet.hpp"
 
 using namespace std;
-+
+
 ServerThread::ServerThread(int initMsgsock) : msgsock(initMsgsock) {
 }
 
@@ -30,9 +30,13 @@ void *ServerThread::run(void *arg) {
     size_t readLength;
     string input;
     do {
+        inBuffer[0] = '\0';
         readLength = read(clientsock, inBuffer, readBufferLength);
         if (readLength > 0) {
-            input += inBuffer;
+
+            for (int i = 0; i < readLength; ++i) {
+                input += inBuffer[i];
+            }
         }
     } while (readLength == readBufferLength);
 

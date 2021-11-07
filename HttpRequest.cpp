@@ -2,13 +2,17 @@
 #include <sstream>
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "HttpRequest.hpp"
 
 static const string BOUNDARY_KEY = "boundary=";
+static const char *CONTENT_TYPE_KEY = "Content-Type";
+static const char *HEADER_SEPARATOR = " ";
+static constexpr char CONTENT_DISPOSITION_SEPARATOR = ';';
+static constexpr char HEADER_VALUE_SEPARATOR = ':';
 static constexpr char PARAM_PATH_SEPARATOR = '?';
 static constexpr char PARAM_VALUE_SEPARATOR = '=';
 static constexpr char PARAMS_SEPARATOR = '&';
-static constexpr char HEADER_SEPARATOR = ' ';
 
 HttpRequest::HttpRequest(const string &inputBuffer) {
     readHeaders(inputBuffer);
@@ -20,10 +24,10 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
     getline(strStream, line);
 
     char *asCharArr = const_cast<char *>(line.c_str());
-    char *token = strtok(asCharArr, " ");
+    char *token = strtok(asCharArr, HEADER_SEPARATOR);
     if (token != nullptr) {
         method = token;
-        token = strtok(nullptr, " ");
+        token = strtok(nullptr, HEADER_SEPARATOR);
     }
 
     if (token != nullptr) {
@@ -63,31 +67,138 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
         headers.insert(make_pair(key, value));
     }
 
-    bool isMultipart;
-    auto resIt = headers.find("Content-Type");
-    if(resIt != headers.end()){
-        isMultipart = resIt->second.find("multipart/form-data") != string::npos;
-    }
-
-    auto boundaryEnd = boundary + "--";
     // READING BODY
-    while (getline(strStream, line)) {
+    readBody(strStream, line);
+
+    // FOR DEBUGGING
+    //    for (const auto &param: params) {
+    //        cout << param.first << " - " << param.second << endl;
+    //    }
+    //
+    //    for (const auto &header: headers) {
+    //        cout << header.first << " - " << header.second << endl;
+    //    }
+}
+
+void HttpRequest::readBody(stringstream &strStream, string &line) {
+
+    auto boundaryEnd = "--" + boundary + "--";
+    // READ ALL BODY PARTS
+    while (getline(strStream, line) && line != boundaryEnd) {
         cout << line << endl;
 
+        string fileName;
+        FilePart filePart;
+
+        // Content disposition
+        if (!line.starts_with("Content-Disposition")) {
+            cerr << "Invalid format, should be Content-Disposition, but found:" + line << endl;
+        }
+
+        bool isFile = line.find("filename") != string::npos;
+
+        // GET DATA AND STORE IT
+        stringstream ss{line};
+        string contentDispValue;
+        getline(ss, contentDispValue, HEADER_VALUE_SEPARATOR);
+        getline(ss, contentDispValue, HEADER_VALUE_SEPARATOR);
+
+        ss.clear();
+        ss.str(contentDispValue);
+
+        string valuePart;
+        while (getline(ss, valuePart, CONTENT_DISPOSITION_SEPARATOR)) {
+            string trimmed = trim(valuePart);
+            if (!isFile || trimmed == "form-data") {
+                continue;
+            }
+
+            stringstream valueReaderStream{trimmed};
+            string temp;
+            getline(valueReaderStream, temp, '=');
+            string key = temp;
+            getline(valueReaderStream, temp, '=');
+            string value = temp;
+
+            if (trim(key) == "filename") {
+                fileName = value;
+                filePart.setFileName(fileName);
+            } else if (trim(key) == "name") {
+                filePart.setKey(value);
+            }
+        }
+
+        // Content Type
+        getline(strStream, line);
+        if (line.find(CONTENT_TYPE_KEY) != string::npos) {
+            string contentTypeVal = line.substr(strlen(CONTENT_TYPE_KEY) + 2);
+            string replacedTypeVal = replaceAll(contentTypeVal, '\r');
+            if (!replacedTypeVal.starts_with("image/")) {
+                continue;
+            }
+            filePart.setFileType(replacedTypeVal);
+            string replacedFilename = replaceAll(fileName, '\r');
+            replacedFilename = replaceAll(replacedFilename, '\"');
+            readFile(strStream, line, replacedFilename);
+
+            fileParts.insert(make_pair(filePart.getKey(), filePart));
+        }
+
+
+        // Content Description (WE DONT NEED TO HANDLE THAT, I THINK)
+        getline(strStream, line);
+
+
         auto charIndex = line.find(boundaryEnd);
-        if(charIndex != string::npos){
+        if (charIndex != string::npos) {
             // END OF BODY
             break;
         }
-    }
 
-//    for (const auto &param: params) {
-//        cout << param.first << " - " << param.second << endl;
-//    }
-//
-//    for (const auto &header: headers) {
-//        cout << header.first << " - " << header.second << endl;
-//    }
+        while (getline(strStream, line) && line != ("--" + boundary)) {
+            cout << line << endl;
+        }
+    }
+}
+
+string HttpRequest::replaceAll(const string &value, char c) {
+    string copy = value;
+    auto iterator = remove(copy.begin(), copy.end(), c);
+    copy.erase(iterator, copy.end());
+    return copy;
+}
+
+string HttpRequest::trim(const string &valuePart) {
+    string res = valuePart;
+    res.erase(res.find_last_not_of(' ') + 1);
+    res.erase(0, res.find_first_not_of(' '));
+    return res;
+}
+
+void HttpRequest::readFile(stringstream &strStream, string &line, const string &fileName) {
+    // THROW AWAY ROW
+    getline(strStream, line);
+
+    bool isMultipart = getIsMultipart();
+    fstream outputFile{TEMP_FOLDER + fileName, ios_base::out};
+    if (isMultipart && outputFile.is_open()) {
+        while (getline(strStream, line)) {
+            line += "\n";
+            outputFile.write(line.c_str(), sizeof(char) * line.length());
+        };
+    }
+    outputFile.close();
+}
+
+
+bool HttpRequest::getIsMultipart() {
+    bool isMultipart;
+    auto resIt = headers.find("Content-Type");
+    if (resIt != headers.end()) {
+        unsigned long searchRes = resIt->second.find("multipart/form-data");
+        isMultipart = searchRes != string::npos;
+    }
+    return isMultipart;
 }
 
 void HttpRequest::readParams(const string &pathPart) {
@@ -107,14 +218,6 @@ void HttpRequest::readParams(const string &pathPart) {
     }
 }
 
-void HttpRequest::readBody(const string &bodyStr) {
-    stringstream bodyStream{bodyStr};
-    string line;
-    while (getline(bodyStream, line)) {
-        cout << line << endl;
-    }
-}
-
 string HttpRequest::urlDecode(string &SRC) {
     string ret;
     char ch;
@@ -130,6 +233,14 @@ string HttpRequest::urlDecode(string &SRC) {
         }
     }
     return (ret);
+}
+
+FilePart HttpRequest::getFilePart(const string &key) const {
+    auto resIt = fileParts.find(key);
+    if(resIt == fileParts.end()){
+        throw "Invalid key at getFilePart: " + key;
+    }
+    return resIt->second;
 }
 
 map<string, string> HttpRequest::getParams() {
