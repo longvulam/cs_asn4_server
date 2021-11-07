@@ -9,7 +9,7 @@
 #include "UploadServlet.hpp"
 
 using namespace std;
-
++
 ServerThread::ServerThread(int initMsgsock) : msgsock(initMsgsock) {
 }
 
@@ -53,9 +53,18 @@ void *ServerThread::run(void *arg) {
 
     // WRITING PART
     // TODO: this part needs to go to response write
-//    buf2[0] = '\0';
-//    string responseHTML = "<div>";
-//    strcpy(buf2, "SOME RESPONSE\r\n");
+    //doGet?
+//    char buf2 = '\0';
+//    char responseHTML[1024] = "<!DOCTYPE html>\r\n"
+//    "<html>\r\n<head>\r\n<title>File Upload Form</title>\r\n</head>\r\n"
+//    "<body>\r\n<h1>Upload file</h1>\r\n"
+//    "<form method=\"POST\" action=\"**REDIRECT**\"enctype=\"multipart/form-data\">\r\n"
+//                                                          "<input type=\"file\" name=\"fileName\"/><br/><br/>\r\n"
+//                                                          "Caption: <input type=\"text\" name=\"caption\"<br/><br/>\r\n<br />\n"
+//                                                          "Date: <input type=\"date\" name=\"date\"<br/><br/>\r\n<br/>\n"
+//                                                          "<input type=\"submit\" value=\"Submit\"/>\r\n</form>\r\n</body>\r\n</html>\r\n";
+//    response.setContentType("text/html");
+//    strcpy(&buf2, responseHTML);
 
     // write buffer to the end.
     if ((readLength = write(clientsock, outBuffer, 1024)) < 0) {

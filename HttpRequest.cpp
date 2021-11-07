@@ -242,3 +242,11 @@ FilePart HttpRequest::getFilePart(const string &key) const {
     }
     return resIt->second;
 }
+
+map<string, string> HttpRequest::getParams() {
+    return params;
+}
+
+map<string, string> HttpRequest::getHeaders() {
+    return headers;
+}

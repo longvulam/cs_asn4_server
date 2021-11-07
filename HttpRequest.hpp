@@ -41,6 +41,10 @@ public:
     FilePart getFilePart(const string& key) const;
 
     static string replaceAll(const string &value, char c);
+
+    map<string, string> getParams();
+
+    map<string, string> getHeaders();
 };
 
 

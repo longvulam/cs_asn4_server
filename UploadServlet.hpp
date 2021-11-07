@@ -4,6 +4,9 @@
 
 class UploadServlet : public Servlet {
 
+private:
+    std::vector<std::string> getRecords(char *path);
+
 public:
 
     void doGet(HttpRequest request, HttpResponse response) override;
