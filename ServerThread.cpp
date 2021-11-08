@@ -33,7 +33,6 @@ void *ServerThread::run(void *arg) {
         inBuffer[0] = '\0';
         readLength = read(clientsock, inBuffer, readBufferLength);
         if (readLength > 0) {
-
             for (int i = 0; i < readLength; ++i) {
                 input += inBuffer[i];
             }
@@ -63,5 +62,6 @@ void *ServerThread::run(void *arg) {
         perror("writing socket");
     }
 
+    close(clientsock);
     return nullptr;
 }

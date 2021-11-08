@@ -202,7 +202,7 @@ void HttpRequest::readFile(stringstream &strStream, string &line, const string &
 
 bool HttpRequest::getIsMultipart() {
     bool isMultipart;
-    auto resIt = headers.find("Content-Type");
+    auto resIt = headers.find("content-type");
     if (resIt != headers.end()) {
         unsigned long searchRes = resIt->second.find("multipart/form-data");
         isMultipart = searchRes != string::npos;
