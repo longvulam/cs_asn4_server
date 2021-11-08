@@ -24,7 +24,8 @@ void HttpResponse::writeHeader() {
     responseStr += "Date: " + date + LINE_FEED;
     responseStr += "Server: Custom C++ server" + LINE_FEED;
     responseStr += "Connection: close" + LINE_FEED;
-    responseStr += "Content-Type: text/html" + LINE_FEED;
+    contentTypeHeader = "Content-Type: text/plain";
+    responseStr += contentTypeHeader + LINE_FEED;
     contentLengthHeader = "Content-Length: 0";
     responseStr += contentLengthHeader + LINE_FEED + LINE_FEED;
     *outputStream += responseStr;
@@ -32,6 +33,14 @@ void HttpResponse::writeHeader() {
 
 void HttpResponse::setContentLength() {
     string newContentLengthHeader = "Content-Length: " + to_string(body.length());
+    size_t indexRes =  outputStream->find(contentLengthHeader);
+    if(indexRes != string::npos){
+        outputStream->replace(indexRes, contentLengthHeader.length(), newContentLengthHeader);
+    }
+}
+
+void HttpResponse::setContentType(const string &contentType) {
+    string newContentLengthHeader = "Content-Type: " + contentType;
     size_t indexRes =  outputStream->find(contentLengthHeader);
     if(indexRes != string::npos){
         outputStream->replace(indexRes, contentLengthHeader.length(), newContentLengthHeader);

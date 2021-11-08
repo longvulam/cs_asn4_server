@@ -18,14 +18,18 @@ public:
 
     void write(const string &content);
 
+    void setContentType(const string &contentType);
+
 private:
 
     string *outputStream;
     string contentLengthHeader;
+    string contentTypeHeader;
     string body;
 
     void writeHeader();
 
     void setContentLength();
+
 
 };

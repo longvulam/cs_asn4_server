@@ -6,8 +6,14 @@
 #include <map>
 #include "FilePart.hpp"
 
-
 using namespace std;
+
+const static string browserUserAgents[] = {
+        "Mozilla",
+        "Chrome"
+        "Firefox",
+        "Safari",
+};
 
 class HttpRequest {
 private:
@@ -53,6 +59,8 @@ public:
     string getParam(const string &key);
 
     string getBodyParam(const string &key);
+
+    bool isBrowserRequest();
 };
 
 

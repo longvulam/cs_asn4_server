@@ -283,3 +283,18 @@ string HttpRequest::getBodyParam(const string &key) {
 
     return resIt->second;
 }
+
+bool HttpRequest::isBrowserRequest() {
+    bool isBrowser = false;
+    auto headerIt = headers.find("User-agent");
+    if(headerIt != headers.end()){
+        string &userAgent = headerIt->second;
+        auto it = browserUserAgents->begin();
+        while(it != browserUserAgents->end() && !isBrowser){
+            if(userAgent.find(*it) != string::npos) {
+                isBrowser = true;
+            }
+        }
+    }
+    return isBrowser;
+}

@@ -2,9 +2,12 @@
 #include <filesystem>
 #include <fstream>
 #include <sys/dir.h>
+#include <set>
 #include "UploadServlet.hpp"
 
 void UploadServlet::doGet(HttpRequest request, HttpResponse response) {
+    response.setContentType("text/html");
+
     string content =
             "<!DOCTYPE html>\r\n"
             "<html>\r\n<head>\r\n<title>File Upload Form</title>\r\n</head>\r\n"
@@ -24,18 +27,12 @@ void UploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
 void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 
-    // Need to write to filepart **
-
-//    if(fileName.empty()) {
-//        response.setStatus(302);
-//        response.sendRedirect("upload");
-//        return;
-//    }
 
     string caption = request.getBodyParam("caption");
     string formDate = request.getBodyParam("date");
 
     FilePart *filePart = request.getFilePart("fileName");
+
     if (filePart != nullptr && !caption.empty() && !formDate.empty()) {
         string path{IMAGES_FOLDER};
         path += formDate + "_" + caption + "." + filePart->getFileType();
@@ -43,24 +40,44 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
         delete filePart;
     }
 
-    string content =
-            "<!DOCTYPE html>\r\n"
-            "<html>\r\n<head>\r\n<title>Files in upload folder</title>\r\n</head>\r\n"
-            "<body>\r\n"
-            "<h1>Files in upload folder</h1>\r\n"
-            "<ul>\r\n";
-
     namespace fs = std::filesystem;
     string path = IMAGES_FOLDER;
+    set<string> images;
     for (const auto &entry: fs::directory_iterator(path)) {
-        content += "<li>";
-        content += entry.path();
-        content += "</li>\r\n";
+        images.insert(entry.path());
     }
 
-    content += "</ul>\r\n"
-               "</body>\r\n"
-               "</html>\r\n";
+    string content;
+    bool isBrowser = request.isBrowserRequest();
+    if (isBrowser) {
+        response.setContentType("text/html");
+        content += "<!DOCTYPE html>\r\n"
+                   "<html>\r\n<head>\r\n<title>Files in upload folder</title>\r\n</head>\r\n"
+                   "<body>\r\n"
+                   "<h1>Files in upload folder</h1>\r\n"
+                   "<ul>\r\n";
+
+        for (const auto &imgPath: images) {
+            content += "<li>";
+            content += imgPath;
+            content += "</li>\r\n";
+        }
+
+        content += "</ul>\r\n"
+                   "</body>\r\n"
+                   "</html>\r\n";
+    } else {
+        response.setContentType("application/json");
+
+        content += "{"
+                   "\"images\": [";
+        for (const auto &fileName: images) {
+            content += "\"" + fileName + "\",";
+        }
+        content.erase(content.end() - 1);
+        content += "]"
+                   "}";
+    }
 
     response.write(content);
 
