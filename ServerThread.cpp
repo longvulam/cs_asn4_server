@@ -45,17 +45,18 @@ void *ServerThread::run(void *arg) {
     } while (readLength == readBufferLength);
 
     HttpRequest request(input);
-    HttpResponse response(outBuffer);
+    string output;
+    HttpResponse response(output);
 
     UploadServlet servlet;
+    if (request.getMethod() == "GET") {
+        servlet.doGet(request, response);
+    }
 
-    // TODO: for developing uncomment the one you're working with
-//    servlet.doPost(request, response);
-//    servlet.doGet(request, response);
+    if (request.getMethod() == "POST") {
+        servlet.doPost(request, response);
+    }
 
-    // WRITING PART
-    // TODO: this part needs to go to response write
-    //doGet?
 //    char buf2 = '\0';
 
     string LF = "\r\n";
@@ -81,7 +82,7 @@ void *ServerThread::run(void *arg) {
     }
 
     content += "</body>\r\n</html>\r\n";
-    //    response.setContentType("text/html");
+
     size_t contentLength = content.size() * sizeof(char);
 
 //    auto now = chrono::system_clock::now();

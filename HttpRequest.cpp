@@ -71,13 +71,13 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
     readBody(strStream, line);
 
     // FOR DEBUGGING
-    //    for (const auto &param: params) {
-    //        cout << param.first << " - " << param.second << endl;
-    //    }
-    //
-    //    for (const auto &header: headers) {
-    //        cout << header.first << " - " << header.second << endl;
-    //    }
+//        for (const auto &param: params) {
+//            cout << param.first << " - " << param.second << endl;
+//        }
+
+//        for (const auto &header: headers) {
+//            cout << header.first << " - " << header.second << endl;
+//        }
 }
 
 void HttpRequest::readBody(stringstream &strStream, string &line) {
@@ -249,4 +249,8 @@ map<string, string> HttpRequest::getParams() {
 
 map<string, string> HttpRequest::getHeaders() {
     return headers;
+}
+
+const string &HttpRequest::getMethod() const {
+    return method;
 }
