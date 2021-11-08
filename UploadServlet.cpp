@@ -1,21 +1,32 @@
 
-
+#include <filesystem>
 #include <fstream>
 #include <sys/dir.h>
 #include "UploadServlet.hpp"
 
 void UploadServlet::doGet(HttpRequest request, HttpResponse response) {
-    // TODO: return upload html page.
+    string content =
+            "<!DOCTYPE html>\r\n"
+            "<html>\r\n<head>\r\n<title>File Upload Form</title>\r\n</head>\r\n"
+            "<body>\r\n<h1>Upload file</h1>\r\n"
+            "<form method=\"POST\" action=\"/\"enctype=\"multipart/form-data\">\r\n"
+            "<input type=\"file\" name=\"fileName\"/><br/><br/>\r\n"
+            "Caption: <input type=\"text\" name=\"caption\"<br/><br/>\r\n<br />\n"
+            "Date: <input type=\"date\" name=\"date\"<br/><br/>\r\n<br/>\n"
+            "<input type=\"submit\" value=\"Submit\"/>\r\n"
+            "</form>\r\n";
 
+    content += "</body>\r\n</html>\r\n";
+
+    response.write(content);
 }
 
 void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 
-    size_t readLength;
-    char outBuffer[1024];
     // Need to write to filepart **
-    string captionName = request.getParams().find("caption")->second;
-    string formDate = request.getParams().find("date")->second;
+    auto params = request.getParams();
+//    auto captionNameIt = params.find("caption");
+//    string formDateIt = params.find("date");
     //string fileName = request.getBody().find("fileName")->second;
 
 //    if(fileName.empty()) {
@@ -24,36 +35,33 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 //        return;
 //    }
 
-    if (formDate.empty()) {
-        formDate = "Non Provided";
-    }
-    if (captionName.empty()) {
-        captionName = "No Caption";
-    }
-    char buf2 = '\0';
-
-    //response.setContentType("text/html");
-    string top = " <!DOCTYPE html><html><body><ul>";
-    string bottom = "</ul></body></html>";
-    //string responseHTML = top + getRecords(path) + bottom;
-
-
-//   strcpy(&buf2, responseHTML);
-
-    // write buffer to the end.
-//    if ((readLength = write(clientsock, outBuffer, 1024)) < 0) {
-//        perror("writing socket");
+//    if (formDateIt != params.end()) {
+//        formDate = "Non Provided";
+//    }
+//    if (captionNameIt != params.end()) {
+//        captionName = "No Caption";
 //    }
 
-//    response.setContentType("text/html");
+    string content =
+            "<!DOCTYPE html>\r\n"
+            "<html>\r\n<head>\r\n<title>Files in upload folder</title>\r\n</head>\r\n"
+            "<body>\r\n"
+            "<h1>Files in upload folder</h1>\r\n"
+            "<ul>\r\n";
 
+    namespace fs = std::filesystem;
+    string path = IMAGES_FOLDER;
+    for (const auto &entry: fs::directory_iterator(path)) {
+        content += "<li>";
+        content += entry.path();
+        content += "</li>\r\n";
+    }
 
+    content += "</ul>\r\n"
+               "</body>\r\n"
+               "</html>\r\n";
 
-    // TODO: write content images folder to the response as an html list.
-//    response.write("");
-
-// TODO: possible path to images folder.
-    // ../images
+    response.write(content);
 
 }
 
