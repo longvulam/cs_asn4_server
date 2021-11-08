@@ -4,7 +4,8 @@
 
 using namespace std;
 
-static const string TEMP_FOLDER = "../temp/";
+static const char TEMP_FOLDER[] = "temp/";
+static const char IMAGES_FOLDER[] = "image/";
 
 class FilePart {
 public:

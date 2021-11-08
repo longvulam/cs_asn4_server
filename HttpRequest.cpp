@@ -133,7 +133,7 @@ void HttpRequest::readBody(stringstream &strStream, string &line) {
         if (line.find(CONTENT_TYPE_KEY) != string::npos) {
             string contentTypeVal = line.substr(strlen(CONTENT_TYPE_KEY) + 2);
             string replacedTypeVal = replaceAll(contentTypeVal, '\r');
-            if (!replacedTypeVal.starts_with("image/")) {
+            if (!replacedTypeVal.starts_with(IMAGES_FOLDER)) {
                 continue;
             }
             filePart.setFileType(replacedTypeVal);
