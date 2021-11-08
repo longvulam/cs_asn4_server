@@ -64,7 +64,7 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
         size_t pos = line.find(':');
         string key = line.substr(0, pos);
         string value = line.substr(pos + 1);
-        headers.insert(make_pair(key, value));
+        headers.insert(make_pair(toLower(key), value));
     }
 
     // READING BODY
@@ -223,7 +223,7 @@ void HttpRequest::readParams(const string &pathPart) {
         getline(paramPartsStream, paramPart, PARAM_VALUE_SEPARATOR);
 
         string paramValue = urlDecode(paramPart);
-        params.insert(make_pair(paramKey, paramValue));
+        params.insert(make_pair(toLower(paramKey), paramValue));
     }
 }
 
@@ -267,7 +267,7 @@ const string &HttpRequest::getMethod() const {
 }
 
 string HttpRequest::getParam(const string &key) {
-    auto resIt = params.find(key);
+    auto resIt = params.find(toLower(key));
     if (resIt == params.end()) {
         return "";
     }
@@ -276,7 +276,7 @@ string HttpRequest::getParam(const string &key) {
 }
 
 string HttpRequest::getBodyParam(const string &key) {
-    auto resIt = bodyParams.find(key);
+    auto resIt = bodyParams.find(toLower(key));
     if (resIt == bodyParams.end()) {
         return "";
     }
@@ -286,15 +286,23 @@ string HttpRequest::getBodyParam(const string &key) {
 
 bool HttpRequest::isBrowserRequest() {
     bool isBrowser = false;
-    auto headerIt = headers.find("User-agent");
-    if(headerIt != headers.end()){
+    auto headerIt = headers.find("user-agent");
+    if (headerIt != headers.end()) {
         string &userAgent = headerIt->second;
         auto it = browserUserAgents->begin();
-        while(it != browserUserAgents->end() && !isBrowser){
-            if(userAgent.find(*it) != string::npos) {
+        while (it != browserUserAgents->end() && !isBrowser) {
+            if (userAgent.find(*it) != string::npos) {
                 isBrowser = true;
             }
         }
     }
     return isBrowser;
+}
+
+inline string HttpRequest::toLower(const string &input) {
+    string res;
+    for (char c: input) {
+        res += (char) tolower(c);
+    }
+    return res;
 }

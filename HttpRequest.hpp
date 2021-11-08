@@ -32,6 +32,8 @@ private:
 
     void readHeaders(const string &inputBuffer);
 
+    string toLower(const string &input);
+
 public:
 
     explicit HttpRequest(const string &inputBuffer);
@@ -61,6 +63,7 @@ public:
     string getBodyParam(const string &key);
 
     bool isBrowserRequest();
+
 };
 
 

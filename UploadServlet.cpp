@@ -80,7 +80,6 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
     }
 
     response.write(content);
-
 }
 
 std::vector<std::string> UploadServlet::getRecords(char *path) {
