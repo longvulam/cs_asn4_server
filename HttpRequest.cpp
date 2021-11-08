@@ -82,10 +82,9 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
 
 void HttpRequest::readBody(stringstream &strStream, string &line) {
 
-    auto boundaryEnd = "--" + boundary + "--";
+    auto boundaryEnd = "--" + replaceAll(boundary, '\r') + "--";
     // READ ALL BODY PARTS
-    while (getline(strStream, line) && line != boundaryEnd) {
-        cout << line << endl;
+    while (replaceAll(line, '\r') != boundaryEnd && getline(strStream, line)) {
 
         string fileName;
         FilePart filePart;
@@ -106,10 +105,12 @@ void HttpRequest::readBody(stringstream &strStream, string &line) {
         ss.clear();
         ss.str(contentDispValue);
 
+
         string valuePart;
+        pair<string, string> paramPair;
         while (getline(ss, valuePart, CONTENT_DISPOSITION_SEPARATOR)) {
             string trimmed = trim(valuePart);
-            if (!isFile || trimmed == "form-data") {
+            if (trimmed == "form-data") {
                 continue;
             }
 
@@ -120,11 +121,21 @@ void HttpRequest::readBody(stringstream &strStream, string &line) {
             getline(valueReaderStream, temp, '=');
             string value = temp;
 
-            if (trim(key) == "filename") {
-                fileName = value;
+            string trimmedKey = trim(key);
+            trimmedKey = replaceAll(trimmedKey, '\r');
+            trimmedKey = replaceAll(trimmedKey, '\"');
+
+            string trimmedValue = replaceAll(value, '\r');
+            trimmedValue = replaceAll(trimmedValue, '\"');
+            if (trimmedKey == "filename") {
+                fileName = trimmedValue;
                 filePart.setFileName(fileName);
-            } else if (trim(key) == "name") {
-                filePart.setKey(value);
+            } else if (trimmedKey == "name") {
+                if (isFile) {
+                    filePart.setKey(trimmedValue);
+                } else {
+                    paramPair.first = trimmedValue;
+                }
             }
         }
 
@@ -136,27 +147,25 @@ void HttpRequest::readBody(stringstream &strStream, string &line) {
             if (!replacedTypeVal.starts_with(IMAGES_FOLDER)) {
                 continue;
             }
-            filePart.setFileType(replacedTypeVal);
-            string replacedFilename = replaceAll(fileName, '\r');
-            replacedFilename = replaceAll(replacedFilename, '\"');
-            readFile(strStream, line, replacedFilename);
+            readFile(strStream, line, fileName);
 
+            ss.clear();
+            ss.str(fileName);
+            string ext;
+            getline(ss, ext, '.');
+            getline(ss, ext, '.');
+            filePart.setFileType(ext);
             fileParts.insert(make_pair(filePart.getKey(), filePart));
-        }
+        } else {
+            // value of the body param
+            getline(strStream, line);
 
+            const string &trimmedValue = replaceAll(line, '\r');
+            paramPair.second = trimmedValue;
+            bodyParams.insert(paramPair);
 
-        // Content Description (WE DONT NEED TO HANDLE THAT, I THINK)
-        getline(strStream, line);
-
-
-        auto charIndex = line.find(boundaryEnd);
-        if (charIndex != string::npos) {
-            // END OF BODY
-            break;
-        }
-
-        while (getline(strStream, line) && line != ("--" + boundary)) {
-            cout << line << endl;
+            // next line is a boundary
+            getline(strStream, line);
         }
     }
 }
@@ -182,7 +191,7 @@ void HttpRequest::readFile(stringstream &strStream, string &line, const string &
     bool isMultipart = getIsMultipart();
     fstream outputFile{TEMP_FOLDER + fileName, ios_base::out};
     if (isMultipart && outputFile.is_open()) {
-        while (getline(strStream, line)) {
+        while (getline(strStream, line) && line != ("--" + boundary)) {
             line += "\n";
             outputFile.write(line.c_str(), sizeof(char) * line.length());
         };
@@ -235,13 +244,15 @@ string HttpRequest::urlDecode(string &SRC) {
     return (ret);
 }
 
-FilePart HttpRequest::getFilePart(const string &key) const {
+FilePart *HttpRequest::getFilePart(const string &key) const {
     auto resIt = fileParts.find(key);
-    if(resIt == fileParts.end()){
-        throw "Invalid key at getFilePart: " + key;
+    if (resIt == fileParts.end()) {
+        cerr << "Invalid key at getFilePart: " + key;
+        return nullptr;
     }
-    return resIt->second;
+    return new FilePart{resIt->second};
 }
+
 
 map<string, string> HttpRequest::getParams() {
     return params;
@@ -253,4 +264,22 @@ map<string, string> HttpRequest::getHeaders() {
 
 const string &HttpRequest::getMethod() const {
     return method;
+}
+
+string HttpRequest::getParam(const string &key) {
+    auto resIt = params.find(key);
+    if (resIt == params.end()) {
+        return "";
+    }
+
+    return resIt->second;
+}
+
+string HttpRequest::getBodyParam(const string &key) {
+    auto resIt = bodyParams.find(key);
+    if (resIt == bodyParams.end()) {
+        return "";
+    }
+
+    return resIt->second;
 }

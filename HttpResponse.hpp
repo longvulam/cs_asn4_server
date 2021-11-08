@@ -20,7 +20,6 @@ public:
 
 private:
 
-    size_t endOfHeader;
     string *outputStream;
     string contentLengthHeader;
     string body;

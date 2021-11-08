@@ -19,15 +19,12 @@ void UploadServlet::doGet(HttpRequest request, HttpResponse response) {
     content += "</body>\r\n</html>\r\n";
 
     response.write(content);
+
 }
 
 void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 
     // Need to write to filepart **
-    auto params = request.getParams();
-//    auto captionNameIt = params.find("caption");
-//    string formDateIt = params.find("date");
-    //string fileName = request.getBody().find("fileName")->second;
 
 //    if(fileName.empty()) {
 //        response.setStatus(302);
@@ -35,12 +32,16 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 //        return;
 //    }
 
-//    if (formDateIt != params.end()) {
-//        formDate = "Non Provided";
-//    }
-//    if (captionNameIt != params.end()) {
-//        captionName = "No Caption";
-//    }
+    string caption = request.getBodyParam("caption");
+    string formDate = request.getBodyParam("date");
+
+    FilePart *filePart = request.getFilePart("fileName");
+    if (filePart != nullptr && !caption.empty() && !formDate.empty()) {
+        string path{IMAGES_FOLDER};
+        path += formDate + "_" + caption + "." + filePart->getFileType();
+        filePart->write(path);
+        delete filePart;
+    }
 
     string content =
             "<!DOCTYPE html>\r\n"
@@ -66,19 +67,17 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 }
 
 std::vector<std::string> UploadServlet::getRecords(char *path) {
-        std::vector<std::string> files;
-        struct dirent *entry;
-        DIR *dir = opendir(path);
+    std::vector<std::string> files;
+    struct dirent *entry;
+    DIR *dir = opendir(path);
 
-        if (dir == nullptr)
-        {
-            return files;
-        }
-        while ((entry = readdir(dir)) != nullptr)
-        {
-            files.emplace_back(entry->d_name);
-        }
-        closedir(dir);
-
+    if (dir == nullptr) {
         return files;
+    }
+    while ((entry = readdir(dir)) != nullptr) {
+        files.emplace_back(entry->d_name);
+    }
+    closedir(dir);
+
+    return files;
 }

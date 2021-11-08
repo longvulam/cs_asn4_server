@@ -18,16 +18,17 @@ private:
     string boundary;
 
     map<string, string> params{};
+    map<string, string> bodyParams{};
     map<string, string> headers{};
     map<string, FilePart> fileParts{};
 
     static string urlDecode(string &SRC);
 
+    void readHeaders(const string &inputBuffer);
+
 public:
 
     explicit HttpRequest(const string &inputBuffer);
-
-    void readHeaders(const string &inputBuffer);
 
     void readParams(const string &pathPart);
 
@@ -39,7 +40,7 @@ public:
 
     static string trim(const string &valuePart);
 
-    FilePart getFilePart(const string& key) const;
+    FilePart * getFilePart(const string& key) const;
 
     static string replaceAll(const string &value, char c);
 
@@ -49,6 +50,9 @@ public:
 
     const string &getMethod() const;
 
+    string getParam(const string &key);
+
+    string getBodyParam(const string &key);
 };
 
 

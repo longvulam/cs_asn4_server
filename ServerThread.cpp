@@ -5,6 +5,7 @@
 #include <string>
 #include <iomanip>
 #include <filesystem>
+#include <iostream>
 #include "ServerThread.hpp"
 #include "HttpResponse.hpp"
 #include "UploadServlet.hpp"
@@ -19,7 +20,6 @@ void ServerThread::start() {
 }
 
 void *ServerThread::run(void *arg) {
-//    DIR *dirp;
     struct direct *d;
     int readBufferLength = 1024;
     char inBuffer[readBufferLength];
@@ -39,6 +39,8 @@ void *ServerThread::run(void *arg) {
             }
         }
     } while (readLength == readBufferLength);
+
+    cout << input << endl;
 
     HttpRequest request(input);
     string output;

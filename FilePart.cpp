@@ -2,6 +2,7 @@
 #include "FilePart.hpp"
 
 #include <utility>
+#include <fstream>
 
 FilePart::FilePart(string fileType, string key, string fileName) : fileName(std::move(fileName)), key(std::move(key)), fileType(std::move(fileType)) {
 
@@ -29,4 +30,24 @@ const string &FilePart::getFileType() const {
 
 void FilePart::setFileType(const string &newVal) {
     FilePart::fileType = newVal;
+}
+
+void FilePart::write(const string& filePath) {
+
+    string tempFilePath {TEMP_FOLDER};
+    tempFilePath += fileName;
+    ifstream ifs{tempFilePath, ios::binary};
+
+    char buffer[1024]; // create a buffer
+    ofstream outf;
+    outf.open(filePath, ios::binary);
+
+    while (ifs.read(buffer, sizeof(buffer)))
+    {
+        outf.write(buffer, ifs.gcount());
+    }
+
+    outf.write(buffer, ifs.gcount());
+    outf.close();
+    ifs.close();
 }
