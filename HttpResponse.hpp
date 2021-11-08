@@ -2,17 +2,31 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 
 using namespace std;
+
+static const string LINE_FEED = "\r\n";
+
 
 class HttpResponse {
 public:
 
-    HttpResponse(char *buf1) {
-        // TODO: add header to buffer here first
-    }
+    explicit HttpResponse(string &init);
 
-    void write(string content) {
-        // TODO: add the content to the Buffer here.
-    }
+    HttpResponse(const HttpResponse &response) = default;
+
+    void write(const string &content);
+
+private:
+
+    size_t endOfHeader;
+    string *outputStream;
+    string contentLengthHeader;
+    string body;
+
+    void writeHeader();
+
+    void setContentLength();
+
 };

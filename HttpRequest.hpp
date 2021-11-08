@@ -11,6 +11,7 @@ using namespace std;
 
 class HttpRequest {
 private:
+
     string method;
     string path;
     string protocolVersion;
@@ -45,6 +46,9 @@ public:
     map<string, string> getParams();
 
     map<string, string> getHeaders();
+
+    const string &getMethod() const;
+
 };
 
 
