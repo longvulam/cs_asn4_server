@@ -17,14 +17,12 @@ static constexpr char PARAM_VALUE_SEPARATOR = '=';
 static constexpr char PARAMS_SEPARATOR = '&';
 
 HttpRequest::HttpRequest(Socket *clientsock) {
-    string rawClientRequest = clientsock->getRequest();
-    cout << rawClientRequest << endl;
+    rawClientRequest = clientsock->getRequest();
 
-    readHeaders(rawClientRequest);
 }
 
-void HttpRequest::readHeaders(const string &inputBuffer) {
-    stringstream strStream{inputBuffer};
+void HttpRequest::readHeaders() {
+    stringstream strStream{rawClientRequest};
     string line;
     getline(strStream, line);
 
@@ -37,7 +35,7 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
 
     if (token != nullptr) {
         path = token;
-        if(!path.starts_with("/")) {
+        if (!path.starts_with("/")) {
             throw invalid_http_request_format("request path");
         }
 

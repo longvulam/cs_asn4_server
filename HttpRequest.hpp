@@ -22,13 +22,12 @@ private:
     string path;
     string protocolVersion;
     string boundary;
+    string rawClientRequest;
 
     map<string, string> params{};
     map<string, string> bodyParams{};
     map<string, string> headers{};
     map<string, FilePart> fileParts{};
-
-    void readHeaders(const string &inputBuffer);
 
     static string urlDecode(string &SRC);
 
@@ -41,6 +40,8 @@ private:
 public:
 
     explicit HttpRequest(Socket *inputBuffer);
+
+    void readHeaders();
 
     void readParams(const string &pathPart);
 
@@ -60,12 +61,13 @@ public:
 
     bool isBrowserRequest();
 
+
     map<string, string> getParams();
 
     map<string, string> getHeaders();
 
-    string getParam(const string &key);
 
+    string getParam(const string &key);
 };
 
 

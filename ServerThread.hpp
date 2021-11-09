@@ -13,6 +13,8 @@ public:
 
 private:
     Socket *msgsock;
+
+    void writeResponse(string &output) const;
 };
 
 

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-static const string LINE_FEED {"\r\n"};
+static const string LF {"\r\n"};
 
 class HttpResponse {
 public:

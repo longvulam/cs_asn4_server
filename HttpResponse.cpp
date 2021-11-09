@@ -19,14 +19,14 @@ void HttpResponse::writeHeader() {
     buffer << put_time(now, "%a, %d %b %Y %H:%M:%S GMT"); // Mon, 07 Nov 2021 12:60:60 GMT
     string date = buffer.str();
 
-    string responseStr = "HTTP/1.1 200 ok" + LINE_FEED;
-    responseStr += "Date: " + date + LINE_FEED;
-    responseStr += "Server: Custom C++ server" + LINE_FEED;
-    responseStr += "Connection: close" + LINE_FEED;
+    string responseStr = "HTTP/1.1 200 ok" + LF;
+    responseStr += "Date: " + date + LF;
+    responseStr += "Server: Custom C++ server" + LF;
+    responseStr += "Connection: close" + LF;
     contentTypeHeader = "Content-Type: text/plain";
-    responseStr += contentTypeHeader + LINE_FEED;
+    responseStr += contentTypeHeader + LF;
     contentLengthHeader = "Content-Length: 0";
-    responseStr += contentLengthHeader + LINE_FEED + LINE_FEED;
+    responseStr += contentLengthHeader + LF + LF;
     *outputStream += responseStr;
 }
 
@@ -40,10 +40,10 @@ void HttpResponse::setContentLength() {
 }
 
 void HttpResponse::setContentType(const string &contentType) {
-    string newContentLengthHeader = "Content-Type: " + contentType;
-    size_t indexRes =  outputStream->find(contentLengthHeader);
+    string newContentTypeHeader = "Content-Type: " + contentType;
+    size_t indexRes =  outputStream->find(contentTypeHeader);
     if(indexRes != string::npos){
-        outputStream->replace(indexRes, contentLengthHeader.length(), newContentLengthHeader);
-        contentLengthHeader = newContentLengthHeader;
+        outputStream->replace(indexRes, contentTypeHeader.length(), newContentTypeHeader);
+        contentTypeHeader = newContentTypeHeader;
     }
 }

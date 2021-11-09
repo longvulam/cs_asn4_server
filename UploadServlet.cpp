@@ -9,17 +9,18 @@ void UploadServlet::doGet(HttpRequest request, HttpResponse response) {
     response.setContentType("text/html");
 
     string content =
-            "<!DOCTYPE html>\r\n"
-            "<html>\r\n<head>\r\n<title>File Upload Form</title>\r\n</head>\r\n"
-            "<body>\r\n<h1>Upload file</h1>\r\n"
-            "<form method=\"POST\" action=\"/\"enctype=\"multipart/form-data\">\r\n"
-            "<input type=\"file\" name=\"fileName\"/><br/><br/>\r\n"
-            "Caption: <input type=\"text\" name=\"caption\"<br/><br/>\r\n<br />\n"
-            "Date: <input type=\"date\" name=\"date\"<br/><br/>\r\n<br/>\n"
-            "<input type=\"submit\" value=\"Submit\"/>\r\n"
-            "</form>\r\n";
+            "<!DOCTYPE html>" + LF +
+            "<html>" + LF + "<head>" + LF + "<title>File Upload Form</title>" + LF + "</head>" + LF +
+            "<body>" + LF + "<h1>Upload file</h1>" + LF +
+            "<form method=\"POST\" action=\"/\"enctype=\"multipart/form-data\">" + LF +
+            "<input type=\"file\" name=\"fileName\"/><br/><br/>" + LF +
+            "Caption: <input type=\"text\" name=\"caption\"<br/><br/>" + LF + "<br />\n" +
+            "Date: <input type=\"date\" name=\"date\"<br/><br/>" + LF +
+            "<br/>" + LF +
+            "<input type=\"submit\" value=\"Submit\"/>" + LF +
+            "</form>" + LF;
 
-    content += "</body>\r\n</html>\r\n";
+    content += "</body>" + LF + "</html>" + LF;
 
     response.write(content);
 }
@@ -49,21 +50,21 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
     bool isBrowser = request.isBrowserRequest();
     if (isBrowser) {
         response.setContentType("text/html");
-        content += "<!DOCTYPE html>\r\n"
-                   "<html>\r\n<head>\r\n<title>Files in upload folder</title>\r\n</head>\r\n"
-                   "<body>\r\n"
-                   "<h1>Files in upload folder</h1>\r\n"
-                   "<ul>\r\n";
+        content += "<!DOCTYPE html>" + LF +
+                   "<html>" + LF + "<head>" + LF + "<title>Files in upload folder</title>" + LF + "</head>" + LF +
+                   "<body>" + LF +
+                   "<h1>Files in upload folder</h1>" + LF +
+                   "<ul>" + LF;
 
         for (const auto &imgPath: images) {
             content += "<li>";
             content += imgPath;
-            content += "</li>\r\n";
+            content += "</li>" + LF;
         }
 
-        content += "</ul>\r\n"
-                   "</body>\r\n"
-                   "</html>\r\n";
+        content += "</ul>" + LF +
+                   "</body>" + LF +
+                   "</html>" + LF;
     } else {
         response.setContentType("application/json");
 
@@ -74,7 +75,7 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
         }
         content.erase(content.end() - 1);
         content += "]"
-                   "}\r\n";
+                   "}" + LF;
     }
 
     response.write(content);
