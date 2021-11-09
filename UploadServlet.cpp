@@ -1,7 +1,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <sys/dir.h>
 #include <set>
 #include "UploadServlet.hpp"
 
@@ -34,15 +33,14 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
 
     if (filePart != nullptr && !caption.empty() && !formDate.empty()) {
         string path{IMAGES_FOLDER};
-        path += formDate + "_" + caption + "_" + filePart->getFileName() + "." + filePart->getFileType();
+        path += formDate + "_" + caption + "." + filePart->getFileType();
         filePart->write(path);
         delete filePart;
     }
 
-    namespace fs = std::filesystem;
     string path = IMAGES_FOLDER;
     set<string> images;
-    for (const auto &entry: fs::directory_iterator(path)) {
+    for (const auto &entry: filesystem::directory_iterator(path)) {
         images.insert(entry.path());
     }
 

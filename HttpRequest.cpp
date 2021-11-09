@@ -1,9 +1,7 @@
-
 #include <sstream>
 #include <iostream>
-#include <cstring>
+#include <string>
 #include <fstream>
-#include <sys/unistd.h>
 #include "HttpRequest.hpp"
 #include "Exceptions.hpp"
 
@@ -18,7 +16,6 @@ static constexpr char PARAMS_SEPARATOR = '&';
 
 HttpRequest::HttpRequest(Socket *clientsock) {
     rawClientRequest = clientsock->getRequest();
-
 }
 
 void HttpRequest::readHeaders() {
