@@ -7,7 +7,6 @@
 
 int main() {
 
-
     mkdir(TEMP_FOLDER, S_IRWXU);
     mkdir(IMAGES_FOLDER, S_IRWXU);
 

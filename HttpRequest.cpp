@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sys/unistd.h>
 #include "HttpRequest.hpp"
+#include "Exceptions.hpp"
 
 static const char BOUNDARY_KEY[] = "boundary=";
 static const char *CONTENT_TYPE_KEY = "Content-Type";
@@ -36,6 +37,9 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
 
     if (token != nullptr) {
         path = token;
+        if(!path.starts_with("/")) {
+            throw invalid_http_request_format("request path");
+        }
 
         // GET PARAM PART OF THE URL PATH
         stringstream pathStream{path};
