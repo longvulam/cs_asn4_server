@@ -21,7 +21,7 @@ void ServerThread::start() {
 
 void *ServerThread::run(void *arg) {
     struct direct *d;
-    int readBufferLength = 1024;
+    int readBufferLength = 102400;
     char inBuffer[readBufferLength];
 
     int clientsock = static_cast<int>(reinterpret_cast<intptr_t>(arg));

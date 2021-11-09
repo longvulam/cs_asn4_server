@@ -36,6 +36,7 @@ void HttpResponse::setContentLength() {
     size_t indexRes =  outputStream->find(contentLengthHeader);
     if(indexRes != string::npos){
         outputStream->replace(indexRes, contentLengthHeader.length(), newContentLengthHeader);
+        contentLengthHeader = newContentLengthHeader;
     }
 }
 
@@ -44,5 +45,6 @@ void HttpResponse::setContentType(const string &contentType) {
     size_t indexRes =  outputStream->find(contentLengthHeader);
     if(indexRes != string::npos){
         outputStream->replace(indexRes, contentLengthHeader.length(), newContentLengthHeader);
+        contentLengthHeader = newContentLengthHeader;
     }
 }
