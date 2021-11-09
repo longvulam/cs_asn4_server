@@ -1,19 +1,18 @@
 
 #pragma once
 
+#include "Thread.hpp"
+#include "Socket.hpp"
 
-#include <cstdio>
-
-class ServerThread {
-private:
-    int msgsock{};
-    pthread_t tid{};
-    static void* run(void *arg);
-
+class ServerThread : public Thread {
 public:
-    ServerThread() = default;
-    explicit ServerThread(int initMsgsock);
-    void start();
+
+    explicit ServerThread(Socket *clientSocket);
+
+    void run() override;
+
+private:
+    Socket *msgsock;
 };
 
 

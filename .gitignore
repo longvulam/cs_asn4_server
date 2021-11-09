@@ -32,3 +32,5 @@
 *.app
 /.idea/
 /cmake-build-debug/
+/cmake-build-debug-cygwin/
+/cmake-build-debug-wsl/

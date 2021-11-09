@@ -1,12 +1,8 @@
 #pragma once
 
-#include "Servlet.hpp"
+#include "ServletBase.hpp"
 
-class UploadServlet : public Servlet {
-
-private:
-    std::vector<std::string> getRecords(char *path);
-
+class UploadServlet : public ServletBase {
 public:
 
     void doGet(HttpRequest request, HttpResponse response) override;

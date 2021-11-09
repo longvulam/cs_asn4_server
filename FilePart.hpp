@@ -25,7 +25,7 @@ public:
 
     void setFileType(const string &newVal);
 
-    void write(const string& basicString);
+    void write(const string &basicString);
 
 private:
     string fileName;

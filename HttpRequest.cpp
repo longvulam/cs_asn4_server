@@ -3,9 +3,10 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <sys/unistd.h>
 #include "HttpRequest.hpp"
 
-static const string BOUNDARY_KEY = "boundary=";
+static const char BOUNDARY_KEY[] = "boundary=";
 static const char *CONTENT_TYPE_KEY = "Content-Type";
 static const char *HEADER_SEPARATOR = " ";
 static constexpr char CONTENT_DISPOSITION_SEPARATOR = ';';
@@ -14,8 +15,11 @@ static constexpr char PARAM_PATH_SEPARATOR = '?';
 static constexpr char PARAM_VALUE_SEPARATOR = '=';
 static constexpr char PARAMS_SEPARATOR = '&';
 
-HttpRequest::HttpRequest(const string &inputBuffer) {
-    readHeaders(inputBuffer);
+HttpRequest::HttpRequest(Socket *clientsock) {
+    string rawClientRequest = clientsock->getRequest();
+    cout << rawClientRequest << endl;
+
+    readHeaders(rawClientRequest);
 }
 
 void HttpRequest::readHeaders(const string &inputBuffer) {
@@ -58,7 +62,7 @@ void HttpRequest::readHeaders(const string &inputBuffer) {
 
         charIndex = line.find(BOUNDARY_KEY);
         if (charIndex != string::npos) {
-            boundary = line.substr(charIndex + BOUNDARY_KEY.length());
+            boundary = line.substr(charIndex + strlen(BOUNDARY_KEY));
         }
 
         size_t pos = line.find(':');
@@ -230,7 +234,7 @@ void HttpRequest::readParams(const string &pathPart) {
 string HttpRequest::urlDecode(string &SRC) {
     string ret;
     char ch;
-    int ii;
+    unsigned int ii;
     for (size_t i = 0; i < SRC.length(); i++) {
         if (int(SRC[i]) == '%') {
             sscanf(SRC.substr(i + 1, 2).c_str(), "%x", &ii);
@@ -253,18 +257,6 @@ FilePart *HttpRequest::getFilePart(const string &key) const {
     return new FilePart{resIt->second};
 }
 
-
-map<string, string> HttpRequest::getParams() {
-    return params;
-}
-
-map<string, string> HttpRequest::getHeaders() {
-    return headers;
-}
-
-const string &HttpRequest::getMethod() const {
-    return method;
-}
 
 string HttpRequest::getParam(const string &key) {
     auto resIt = params.find(toLower(key));
@@ -305,4 +297,20 @@ inline string HttpRequest::toLower(const string &input) {
         res += (char) tolower(c);
     }
     return res;
+}
+
+map<string, string> HttpRequest::getParams() {
+    return params;
+}
+
+map<string, string> HttpRequest::getHeaders() {
+    return headers;
+}
+
+const string &HttpRequest::getMethod() const {
+    return method;
+}
+
+const string &HttpRequest::getProtocolVersion() const {
+    return protocolVersion;
 }

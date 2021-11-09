@@ -6,8 +6,7 @@
 
 using namespace std;
 
-static const string LINE_FEED = "\r\n";
-
+static const string LINE_FEED {"\r\n"};
 
 class HttpResponse {
 public:
@@ -30,6 +29,5 @@ private:
     void writeHeader();
 
     void setContentLength();
-
-
 };
+

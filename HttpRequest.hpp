@@ -1,10 +1,10 @@
-
 #pragma once
 
 #include <string>
 #include <vector>
 #include <map>
 #include "FilePart.hpp"
+#include "Socket.hpp"
 
 using namespace std;
 
@@ -28,15 +28,19 @@ private:
     map<string, string> headers{};
     map<string, FilePart> fileParts{};
 
-    static string urlDecode(string &SRC);
-
     void readHeaders(const string &inputBuffer);
 
-    string toLower(const string &input);
+    static string urlDecode(string &SRC);
+
+    static string toLower(const string &input);
+
+    static string trim(const string &valuePart);
+
+    static string replaceAll(const string &value, char c);
 
 public:
 
-    explicit HttpRequest(const string &inputBuffer);
+    explicit HttpRequest(Socket *inputBuffer);
 
     void readParams(const string &pathPart);
 
@@ -46,23 +50,21 @@ public:
 
     void readFile(stringstream &strStream, string &line, const string &fileName);
 
-    static string trim(const string &valuePart);
+    FilePart *getFilePart(const string &key) const;
 
-    FilePart * getFilePart(const string& key) const;
+    const string &getMethod() const;
 
-    static string replaceAll(const string &value, char c);
+    const string &getProtocolVersion() const;
+
+    string getBodyParam(const string &key);
+
+    bool isBrowserRequest();
 
     map<string, string> getParams();
 
     map<string, string> getHeaders();
 
-    const string &getMethod() const;
-
     string getParam(const string &key);
-
-    string getBodyParam(const string &key);
-
-    bool isBrowserRequest();
 
 };
 
