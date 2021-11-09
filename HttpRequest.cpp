@@ -1,6 +1,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include "HttpRequest.hpp"
 #include "Exceptions.hpp"
