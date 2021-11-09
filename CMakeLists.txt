@@ -14,5 +14,5 @@ add_executable(cs_asn4_server
         Thread.cpp Thread.hpp
         ServerThread.cpp ServerThread.hpp
         ServerSocket.cpp ServerSocket.hpp
-        Socket.cpp Socket.hpp
+        ClientSocket.cpp ClientSocket.hpp
         FilePart.cpp FilePart.hpp)

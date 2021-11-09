@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Socket.hpp"
+#include "ClientSocket.hpp"
 
 class ServerSocket {
 public:
     explicit ServerSocket(int port);
 
-    Socket *Accept() const;
+    ClientSocket *Accept() const;
 
     ~ServerSocket();
 

@@ -4,7 +4,7 @@ class Thread {
 public:
     explicit Thread(Thread *childThread);
 
-    ~Thread();
+    virtual ~Thread();
 
     virtual void run() = 0;
 

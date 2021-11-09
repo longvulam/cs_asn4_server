@@ -15,7 +15,7 @@ static constexpr char PARAM_PATH_SEPARATOR = '?';
 static constexpr char PARAM_VALUE_SEPARATOR = '=';
 static constexpr char PARAMS_SEPARATOR = '&';
 
-HttpRequest::HttpRequest(Socket *clientsock) {
+HttpRequest::HttpRequest(ClientSocket *clientsock) {
     rawClientRequest = clientsock->getRequest();
 }
 

@@ -2,19 +2,19 @@
 #pragma once
 
 #include "Thread.hpp"
-#include "Socket.hpp"
+#include "ClientSocket.hpp"
 
-class ServerThread : public Thread {
+class ServerThread final : public Thread {
 public:
 
-    explicit ServerThread(Socket *clientSocket);
+    explicit ServerThread(ClientSocket *clientSocket);
 
     void run() override;
 
 private:
-    Socket *msgsock;
+    ClientSocket *msgsock;
 
-    void writeResponse(string &output) const;
+    void writeResponseAndCloseSocket(string &output) const;
 };
 
 

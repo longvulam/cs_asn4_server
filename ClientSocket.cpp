@@ -1,21 +1,22 @@
-#include "Socket.hpp"
+#include "ClientSocket.hpp"
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
 
 
-Socket::Socket(int sock) {
+ClientSocket::ClientSocket(int sock) {
     this->sock = sock;
 }
 
-string Socket::getRequest() const {
+string ClientSocket::getRequest() const {
     const int readBufferLength = 1024;
     char readBuffer[readBufferLength];
 
     // READING PART
-    size_t readLength = readBufferLength;
+    size_t readLength;
     string rawClientRequest;
-    while (readLength == readBufferLength) {
+    bool firstRead = true;
+    while (readLength == readBufferLength || firstRead ) {
         readBuffer[0] = '\0';
         if ((readLength = read(sock, readBuffer, readBufferLength)) < 0) {
             perror("reading socket");
@@ -24,11 +25,12 @@ string Socket::getRequest() const {
                 rawClientRequest += readBuffer[i];
             }
         }
+        firstRead = false;
     }
     return rawClientRequest;
 }
 
-void Socket::sendResponse(const char *res) const {
+void ClientSocket::sendResponse(const char *res) const {
     int rval;
     if ((rval = write(sock, res, strlen(res))) < 0) {
         perror("writing socket");
@@ -37,6 +39,6 @@ void Socket::sendResponse(const char *res) const {
     }
 }
 
-Socket::~Socket() {
+ClientSocket::~ClientSocket() {
     close(sock);
 }

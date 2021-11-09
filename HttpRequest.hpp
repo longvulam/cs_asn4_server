@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include "FilePart.hpp"
-#include "Socket.hpp"
+#include "ClientSocket.hpp"
 
 using namespace std;
 
@@ -39,7 +39,7 @@ private:
 
 public:
 
-    explicit HttpRequest(Socket *inputBuffer);
+    explicit HttpRequest(ClientSocket *inputBuffer);
 
     void readHeaders();
 

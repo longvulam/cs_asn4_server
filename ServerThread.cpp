@@ -11,7 +11,7 @@
 
 using namespace std;
 
-ServerThread::ServerThread(Socket *clientSocket) : Thread(this) {
+ServerThread::ServerThread(ClientSocket *clientSocket) : Thread(this) {
     this->msgsock = clientSocket;
 }
 
@@ -27,7 +27,7 @@ void ServerThread::run() {
     } catch (invalid_http_request_format &ex) {
         cerr << ex.what() << endl;
         string errMsg{"Wrong HTTP Request format" + LF + LF};
-        writeResponse(errMsg);
+        writeResponseAndCloseSocket(errMsg);
         return;
     }
 
@@ -40,10 +40,10 @@ void ServerThread::run() {
         servlet.doPost(request, response);
     }
 
-    writeResponse(output);
+    writeResponseAndCloseSocket(output);
 }
 
-void ServerThread::writeResponse(string &output) const {
+void ServerThread::writeResponseAndCloseSocket(string &output) const {
     output += "\r\n";
     msgsock->sendResponse(output.c_str());
     delete msgsock;

@@ -20,11 +20,11 @@ ServerSocket::ServerSocket(int port) {
     listen(sock, 5);
 }
 
-Socket *ServerSocket::Accept() const {
+ClientSocket *ServerSocket::Accept() const {
     sockaddr_in remoteAddr{};
     int addrLen = sizeof(remoteAddr);
     int cSock = accept(sock, (struct sockaddr *) &remoteAddr, &addrLen);
-    auto *cs = new Socket(cSock);
+    auto *cs = new ClientSocket(cSock);
     return cs;
 }
 

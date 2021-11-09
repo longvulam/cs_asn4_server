@@ -4,15 +4,15 @@
 
 using namespace std;
 
-class Socket {
+class ClientSocket {
 public:
-    explicit Socket(int sock);
+    explicit ClientSocket(int sock);
 
     string getRequest() const;
 
     void sendResponse(const char *res) const;
 
-    ~Socket();
+    ~ClientSocket();
 
 private:
     int sock;
