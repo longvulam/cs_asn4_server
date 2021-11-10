@@ -22,7 +22,7 @@ Thread::Thread(Thread *childThread) {
 void Thread::start() {
     pthread_t tid;
     pthread_create(&tid, nullptr, startMethodInThread, (void *) this->childThread);
-    memcpy(this->state, (const void *) &tid, sizeof(pthread_t));
+//    memcpy(this->state, (const void *) &tid, sizeof(pthread_t));
 }
 
 Thread::~Thread() {

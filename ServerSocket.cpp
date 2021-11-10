@@ -2,6 +2,8 @@
 #include <sys/socket.h>
 #include <resolv.h>
 #include <cstdio>
+#include <iostream>
+#include <sys/unistd.h>
 
 ServerSocket::ServerSocket(int port) {
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -24,6 +26,10 @@ ClientSocket *ServerSocket::Accept() const {
     sockaddr_in remoteAddr{};
     int addrLen = sizeof(remoteAddr);
     int cSock = accept(sock, (struct sockaddr *) &remoteAddr, &addrLen);
+
+//    cout << "Current Socket: " << cSock << endl;
+//    sleep(5);
+
     auto *cs = new ClientSocket(cSock);
     return cs;
 }

@@ -19,7 +19,7 @@ void UploadServlet::doGet(HttpRequest request, HttpResponse response) {
             "<input type=\"submit\" value=\"Submit\"/>" + LF +
             "</form>" + LF;
 
-    content += "</body>" + LF + "</html>" + LF;
+    content += "</body>" + LF + "</html>";
 
     response.write(content);
 }
@@ -73,7 +73,7 @@ void UploadServlet::doPost(HttpRequest request, HttpResponse response) {
         }
         content.erase(content.end() - 1);
         content += "]"
-                   "}" + LF;
+                   "}";
     }
 
     response.write(content);

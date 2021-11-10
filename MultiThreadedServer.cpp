@@ -12,7 +12,8 @@ int main() {
 
     ServerSocket serverSocket{8888};
     while (1) {
-        ServerThread serverThread{serverSocket.Accept()};
+        ClientSocket *cSocket = serverSocket.Accept();
+        ServerThread serverThread{cSocket};
         serverThread.start();
     }
 

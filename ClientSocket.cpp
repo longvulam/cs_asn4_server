@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
+#include <iostream>
 
 
 ClientSocket::ClientSocket(int sock) {
@@ -27,6 +28,7 @@ string ClientSocket::getRequest() const {
         }
         firstRead = false;
     }
+//    cout << rawClientRequest << endl;
     return rawClientRequest;
 }
 

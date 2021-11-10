@@ -251,7 +251,7 @@ string HttpRequest::urlDecode(string &SRC) {
 FilePart *HttpRequest::getFilePart(const string &key) const {
     auto resIt = fileParts.find(key);
     if (resIt == fileParts.end()) {
-        cerr << "Invalid key at getFilePart: " + key;
+        cerr << "Invalid key at getFilePart: " + key << endl;
         return nullptr;
     }
     return new FilePart{resIt->second};
